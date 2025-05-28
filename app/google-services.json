@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1032305628537",
+    "project_id": "ekanaplikasi",
+    "storage_bucket": "ekanaplikasi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032305628537:android:51f1ee8007f874b70ecba8",
+        "android_client_info": {
+          "package_name": "com.project.ekanaplikasi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDh2whzCpuPegX2nwOT3v50n1TvgYHOmW0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032305628537:android:6311b9d476dddf9c0ecba8",
+        "android_client_info": {
+          "package_name": "com.project.ekanfinal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDh2whzCpuPegX2nwOT3v50n1TvgYHOmW0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
