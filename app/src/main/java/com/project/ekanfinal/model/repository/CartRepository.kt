@@ -44,10 +44,10 @@ class CartRepository {
             val updatedQuantity = currentQuantity - 1
 
             val updatedCart=
-            if (updatedQuantity <= 0 || removeAll)
-                mapOf("cartItems.$productId" to FieldValue.delete())
-            else
-            mapOf("cartItems.$productId" to updatedQuantity)
+                if (updatedQuantity <= 0 || removeAll)
+                    mapOf("cartItems.$productId" to FieldValue.delete())
+                else
+                    mapOf("cartItems.$productId" to updatedQuantity)
 
             userDoc.update(updatedCart).await()
             true
@@ -56,18 +56,16 @@ class CartRepository {
         }
     }
 
-        fun getProductById(productId: String, onResult: (ProductModel?) -> Unit) {
-            firestore.collection("data").document("stock")
-                .collection("products").document(productId)
-                .get()
-                .addOnSuccessListener { document ->
-                    val product = document.toObject(ProductModel::class.java)
-                    onResult(product)
-                }
-                .addOnFailureListener {
-                    onResult(null)
-                }
-        }
+    fun getProductById(productId: String, onResult: (ProductModel?) -> Unit) {
+        firestore.collection("data").document("stock")
+            .collection("products").document(productId)
+            .get()
+            .addOnSuccessListener { document ->
+                val product = document.toObject(ProductModel::class.java)
+                onResult(product)
+            }
+            .addOnFailureListener {
+                onResult(null)
+            }
     }
-
-
+}

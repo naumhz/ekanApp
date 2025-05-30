@@ -1,5 +1,6 @@
 package com.project.ekanfinal.view
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +16,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,6 +34,8 @@ import com.project.ekanfinal.viewmodel.UserViewModel
 fun ChatPage(pesan: String, modifier: Modifier = Modifier, viewmodel: UserViewModel = viewModel()) {
 
     val user by viewmodel.user
+
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -46,10 +53,20 @@ fun ChatPage(pesan: String, modifier: Modifier = Modifier, viewmodel: UserViewMo
             Text(pesan)
             Text("Nama: ${user?.username}")
             Text("Email: ${user?.email}")
-            Text("Alamat: ${user?.address}")
 
         Button(
             onClick = {
+                user?.uid?.let { uid ->
+                    viewmodel.validateCart(
+                        uid = uid,
+                        onSuccess = {
+                            Toast.makeText(context, "Cart divalidasi", Toast.LENGTH_SHORT).show()
+                        },
+                        onError = {
+                            Toast.makeText(context, "Gagal: $it", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // Hijau
             modifier = Modifier.fillMaxWidth()

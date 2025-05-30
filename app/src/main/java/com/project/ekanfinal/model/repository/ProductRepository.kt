@@ -19,4 +19,12 @@ class ProductRepository {
         }
     }
 
+    suspend fun getProductsByIds(ids: List<String>): List<ProductModel> {
+        if (ids.isEmpty()) return emptyList()
+        val snapshot = firestore.collection("data").document("stock")
+            .collection("products")
+            .whereIn("id", ids).get().await()
+        return snapshot.toObjects(ProductModel::class.java)
+    }
+
 }

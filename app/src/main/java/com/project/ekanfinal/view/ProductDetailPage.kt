@@ -45,12 +45,15 @@ import androidx.navigation.NavHostController
 import com.project.ekanfinal.R
 import com.project.ekanfinal.viewmodel.CartViewModel
 import com.project.ekanfinal.viewmodel.ProductViewModel
+import com.project.ekanfinal.viewmodel.UserViewModel
 
 @Composable
 fun ProductDetailPage(modifier: Modifier = Modifier,productID:String, navController: NavHostController,
-                      viewModel: ProductViewModel , cartViewModel : CartViewModel
+                      viewModel: ProductViewModel , cartViewModel : CartViewModel,
+                      userViewModel: UserViewModel
 ){
     val product = viewModel.selectedProduct.collectAsState()
+    val user = userViewModel.user.value
 
     LaunchedEffect(productID) {
         viewModel.getProductById(productID)
@@ -248,7 +251,7 @@ fun ProductDetailPage(modifier: Modifier = Modifier,productID:String, navControl
 
                 Button(
                     onClick = {
-                        cartViewModel.addToCart(productID)
+                        user?.uid?.let { cartViewModel.addToCart(productID) }
                     },
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2EADC9)),

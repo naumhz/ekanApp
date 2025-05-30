@@ -31,8 +31,7 @@ class CartViewModel(
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage = _toastMessage.asSharedFlow()
 
-//    private val _products = MutableStateFlow<Map<String, ProductModel>>(emptyMap())
-//    val products: StateFlow<Map<String, ProductModel>> = _products
+
 
     private val _products = mutableStateOf<Map<String, ProductModel>>(emptyMap())
     val product: State<Map<String, ProductModel>> = _products
@@ -68,12 +67,10 @@ class CartViewModel(
                 if(removeAll)
                     _toastMessage.emit("Berhasil Menghapus Semua Produk dari Keranjang")
                 else
-                _toastMessage.emit("Berhasil Mengurangi Produk dari Keranjang")
+                    _toastMessage.emit("Berhasil Mengurangi Produk dari Keranjang")
             } else {
                 _toastMessage.emit("Gagal Mengurangi Produk dari Keranjang")
             }
         }
     }
 }
-
-

@@ -245,8 +245,3 @@ fun CartItemCard(
         }
     }
 }
-
-
-
-
-

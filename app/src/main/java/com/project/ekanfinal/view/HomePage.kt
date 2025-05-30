@@ -50,6 +50,7 @@ import com.project.ekanfinal.model.data.ProductModel
 import com.project.ekanfinal.viewmodel.BannerViewModel
 import com.project.ekanfinal.viewmodel.CartViewModel
 import com.project.ekanfinal.viewmodel.ProductViewModel
+import com.project.ekanfinal.viewmodel.UserViewModel
 import com.tbuonomo.viewpagerdotsindicator.compose.DotsIndicator
 import com.tbuonomo.viewpagerdotsindicator.compose.model.DotGraphic
 import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
@@ -60,7 +61,8 @@ fun HomePage(
     navController: NavHostController,
     productViewModel: ProductViewModel,
     bannerViewModel: BannerViewModel,
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel,
+    userViewModel: UserViewModel
 ) {
     val products by productViewModel.productList.collectAsState()
     val banners by bannerViewModel.banners.collectAsState()
@@ -151,7 +153,7 @@ fun HomePage(
             }
 
             items(products.size) { product ->
-                ProductCardPromo(product = products[product], cartViewModel)
+                ProductCardPromo(product = products[product], cartViewModel, userViewModel)
             }
         }
     }
@@ -203,8 +205,10 @@ fun ProductCard(product: ProductModel) {
 }
 
 @Composable
-fun ProductCardPromo(product: ProductModel, cartViewModel: CartViewModel
+fun ProductCardPromo(product: ProductModel, cartViewModel: CartViewModel,
+                     userViewModel: UserViewModel
 ) {
+    val user = userViewModel.user.value
 
     val context = LocalContext.current
 
@@ -251,7 +255,7 @@ fun ProductCardPromo(product: ProductModel, cartViewModel: CartViewModel
                     modifier = Modifier
                         .size(24.dp)
                         .clickable {
-                            cartViewModel.addToCart(productId = product.id)
+                            user?.uid?.let { cartViewModel.addToCart(product.id) }
                         }
                 )
                 Image(

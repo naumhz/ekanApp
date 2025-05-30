@@ -13,10 +13,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.project.ekanfinal.ui.theme.EkanFinalTheme
 import com.project.ekanfinal.view.RegisterPage
+import com.project.ekanfinal.viewmodel.AddressViewModel
 import com.project.ekanfinal.viewmodel.AuthViewModel
 import com.project.ekanfinal.viewmodel.BannerViewModel
 import com.project.ekanfinal.viewmodel.CartViewModel
+import com.project.ekanfinal.viewmodel.OrderViewModel
 import com.project.ekanfinal.viewmodel.ProductViewModel
+import com.project.ekanfinal.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -24,6 +27,9 @@ class MainActivity : ComponentActivity() {
     private val productViewModel: ProductViewModel by viewModels<ProductViewModel>()
     private val bannerViewModel: BannerViewModel by viewModels<BannerViewModel>()
     private val cartViewModel: CartViewModel by viewModels<CartViewModel>()
+    private val userViewModel: UserViewModel by viewModels<UserViewModel>()
+    private val orderViewModel: OrderViewModel by viewModels<OrderViewModel>()
+    private val addressViewModel: AddressViewModel by viewModels<AddressViewModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +42,10 @@ class MainActivity : ComponentActivity() {
                     authViewModel = authViewModel,
                     productViewModel = productViewModel,
                     bannerViewModel = bannerViewModel,
-                    cartViewModel = cartViewModel
-
+                    cartViewModel = cartViewModel,
+                    userViewModel = userViewModel,
+                    orderViewModel = orderViewModel,
+                    addressViewModel = addressViewModel
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.project.ekanfinal.model.repository
 
+import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -44,13 +45,21 @@ class UserRepository {
             .document(uid)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
+                    Log.e("FIREBASE", "Error in snapshot: ${error.message}")
                     onUserChange(null)
                     return@addSnapshotListener
                 }
                 val user = snapshot?.toObject(UserModel::class.java)
+                Log.d("FIREBASE", "Fetched user: $user")
                 onUserChange(user)
             }
     }
+    suspend fun getCurrentUser(): UserModel? {
+        val uid = auth.currentUser?.uid ?: return null
+        val snapshot = firestore.collection("users").document(uid).get().await()
+        return snapshot.toObject(UserModel::class.java)
+    }
+
 }
 
 
