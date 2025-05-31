@@ -19,6 +19,7 @@ import com.project.ekanfinal.viewmodel.BannerViewModel
 import com.project.ekanfinal.viewmodel.CartViewModel
 import com.project.ekanfinal.viewmodel.OrderViewModel
 import com.project.ekanfinal.viewmodel.ProductViewModel
+import com.project.ekanfinal.viewmodel.ReviewViewModel
 import com.project.ekanfinal.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
     private val userViewModel: UserViewModel by viewModels<UserViewModel>()
     private val orderViewModel: OrderViewModel by viewModels<OrderViewModel>()
     private val addressViewModel: AddressViewModel by viewModels<AddressViewModel>()
+    private val reviewViewModel: ReviewViewModel by viewModels<ReviewViewModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +47,8 @@ class MainActivity : ComponentActivity() {
                     cartViewModel = cartViewModel,
                     userViewModel = userViewModel,
                     orderViewModel = orderViewModel,
-                    addressViewModel = addressViewModel
+                    addressViewModel = addressViewModel,
+                    reviewViewModel = reviewViewModel
                 )
             }
         }

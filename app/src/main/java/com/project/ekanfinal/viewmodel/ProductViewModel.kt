@@ -35,4 +35,6 @@ class ProductViewModel(
             _selectedProduct.value = detailRepository.getProductById(productId)
         }
     }
+
+
 }

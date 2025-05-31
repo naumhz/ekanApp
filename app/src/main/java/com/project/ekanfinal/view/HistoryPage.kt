@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +28,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,170 +54,183 @@ import com.project.ekanfinal.viewmodel.CartViewModel
 import com.project.ekanfinal.viewmodel.OrderViewModel
 import com.project.ekanfinal.viewmodel.UserViewModel
 
-data class Order(
-    val id: Int,
-    val products: List<OrderProduct>,
-    val status: String
-)
-
-data class OrderProduct(
-    val imageRes: Int,
-    val name: String,
-    val quantity: Int,
-    val weight: String,
-    val price: Int
-)
-
-val dummyOrders = listOf(
-    Order(
-        id = 1,
-        status = "Belum Bayar",
-        products = listOf(
-            OrderProduct(R.drawable.ikantuna, "Ikan Tuna", 1, "1 kg", 150000),
-            OrderProduct(R.drawable.ikancakalang, "Ikan Cakalang", 2, "500 gr", 100000)
-        )),
-    Order(
-        id = 2,
-        status = "Selesai",
-        products = listOf(
-            OrderProduct(R.drawable.lobster, "Lobster", 1, "1 kg", 250000)
-        )
-    )
-)
-
 @Composable
-fun HistoryPage(navController: NavHostController) {
-    var selectedStatus by remember { mutableStateOf("Semua") }
-    val filteredOrders = if (selectedStatus == "Semua") dummyOrders else dummyOrders.filter { it.status == selectedStatus }
+fun HistoryPage(
+    navController: NavHostController,
+    uid: String,
+    viewModel: OrderViewModel = viewModel()
+) {
+    LaunchedEffect(uid) {
+        viewModel.setUser(uid)
+    }
 
-    Scaffold(bottomBar = { BottomNavigationBar(navController) }) { paddingValues ->
+    val orders by viewModel.orders.observeAsState(emptyList())
+    val error by viewModel.error.observeAsState("")
+
+
+    var selectedStatus by remember { mutableStateOf("Semua") }
+    val statusOptions = listOf("Semua", "Belum Bayar", "Diproses", "Dikirim", "Selesai", "Reviewed")
+
+    val statusPriority = mapOf(
+        "Belum Bayar" to 0,
+        "Diproses" to 1,
+        "Dikirim" to 2,
+        "Selesai" to 3,
+        "Reviewed" to 4
+    )
+
+    val filteredOrders = if (selectedStatus == "Semua") {
+        orders.sortedBy { statusPriority[it.status] ?: 99 }
+    } else {
+        orders.filter { it.status.equals(selectedStatus, ignoreCase = true) }
+    }
+
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController) }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFF8F8F8))
                 .padding(paddingValues)
+                .fillMaxSize()
+
+
         ) {
-            Text(
-                text = "Pesanan Saya",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
+
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFF2EADC9))
-                    .padding(16.dp)
-                    .wrapContentWidth(Alignment.CenterHorizontally)
-            )
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Pesanan Saya", fontSize = 24.sp, color = Color.White)
+            }
+
 
             LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                items(listOf("Semua", "Belum Bayar", "Diproses", "Dikirim", "Selesai")) { status ->
+                items(statusOptions) { status ->
+                    val isSelected = status == selectedStatus
                     Button(
                         onClick = { selectedStatus = status },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedStatus == status) Color(0xFF2EADC9) else Color.White,
-                            contentColor = if (selectedStatus == status) Color.White else Color.Black
+                            containerColor = if (isSelected) Color(0xFF2EADC9) else Color.White,
+                            contentColor = if (isSelected) Color.White else Color(0xFF2EADC9)
                         ),
-                        shape = RoundedCornerShape(50),
-                        modifier = Modifier.padding(horizontal = 4.dp)
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier.height(36.dp)
                     ) {
-                        Text(text = status)
+                        Text(text = status, fontSize = 14.sp)
                     }
                 }
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp)) {
-                items(filteredOrders) { order ->
-                    OrderCard(order)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun OrderCard(order: Order) {
-    val totalHarga = order.products.sumOf { it.price }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Status: ${order.status}",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
-
             Divider(
                 color = Color.LightGray,
                 thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
-            order.products.forEach { product ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = product.imageRes),
-                        contentDescription = product.name,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(text = product.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        Text(text = "${product.quantity} x ${product.weight}", fontSize = 14.sp, color = Color.Gray)
-                        Text(text = "Rp ${product.price}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-                Divider(color = Color.LightGray, thickness = 0.5.dp)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Total: Rp $totalHarga",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.align(Alignment.End)
-            )
-
-            Divider(
-                color = Color.LightGray,
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
-            Row(
                 modifier = Modifier
+                    .padding(vertical = 8.dp)
                     .fillMaxWidth()
-                    .padding(top = 12.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(
-                    onClick = { /* aksi */ },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2EADC9))
+            )
+
+
+            if (error.isNotEmpty()) {
+                Text("Error: $error", color = Color.Red)
+            } else if (filteredOrders.isEmpty()) {
+                Text("Tidak ada pesanan dengan status \"$selectedStatus\".")
+            } else {
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    Text(text = if (order.status == "Selesai") "Review" else "Bayar")
+                    items(filteredOrders) { order ->
+                        Card(
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = CardDefaults.cardElevation(4.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            modifier = Modifier.fillMaxWidth()
+
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+
+                                Text("Order ID: ${order.id}", fontWeight = FontWeight.Bold)
+                                Text("Status: ${order.status.replaceFirstChar { it.uppercase() }}")
+                                Divider(
+                                    color = Color.LightGray,
+                                    thickness = 1.dp,
+                                    modifier = Modifier
+                                        .padding(vertical = 8.dp)
+                                        .fillMaxWidth()
+                                )
+                                Text("Alamat: ${order.address.detailAlamat}")
+                                if (order.address.catatan.isNotEmpty()) {
+                                    Text("Catatan: ${order.address.catatan}")
+                                }
+                                Divider(
+                                    color = Color.LightGray,
+                                    thickness = 1.dp,
+                                    modifier = Modifier
+                                        .padding(vertical = 8.dp)
+                                        .fillMaxWidth()
+                                )
+                                Text("Total: ${order.items.values.sum()} Produk : Rp ${order.total}")
+                                Divider(
+                                    color = Color.LightGray,
+                                    thickness = 1.dp,
+                                    modifier = Modifier
+                                        .padding(vertical = 8.dp)
+                                        .fillMaxWidth()
+                                )
+
+                                when (order.status.lowercase()) {
+                                    "belum bayar" -> {
+                                        Button(
+                                            onClick = {
+                                                navController.navigate("bayar/${order.id}")
+                                            },
+                                            modifier = Modifier.align(Alignment.Start)
+                                                .height(36.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFF2EADC9),
+                                                contentColor = Color.White
+                                            ),
+                                            shape = RoundedCornerShape(20.dp),
+                                        ) {
+                                            Text("Bayar")
+                                        }
+                                    }
+
+                                    "selesai" -> {
+                                        Button(
+                                            onClick = {
+                                                navController.navigate("review/$uid/${order.id}")
+                                            },
+                                            modifier = Modifier.align(Alignment.Start)
+                                                .height(36.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFF2EADC9),
+                                                contentColor = Color.White
+                                            ),
+                                            shape = RoundedCornerShape(20.dp),
+                                        ) {
+                                            Text("Review")
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+
+

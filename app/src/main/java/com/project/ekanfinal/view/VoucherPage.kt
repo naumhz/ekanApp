@@ -54,7 +54,7 @@ fun VoucherPage(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // === VOUCHER DISKON10 ===
+
         VoucherItem(
             title = "Diskon 10%",
             detail = "Untuk total belanja",
@@ -63,7 +63,7 @@ fun VoucherPage(
             navController = navController
         )
 
-        // === VOUCHER ONGKIRFREE ===
+
         VoucherItem(
             title = "Gratis Ongkir",
             detail = "Diskon 100% ongkir",

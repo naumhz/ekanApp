@@ -1,5 +1,6 @@
 package com.project.ekanfinal.view
 
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -46,8 +47,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.project.ekanfinal.model.data.AddressModel
 import com.project.ekanfinal.viewmodel.AddressViewModel
+
 
 @Composable
 fun MakeOrderPage(modifier: Modifier = Modifier, navController: NavHostController,
@@ -64,6 +67,12 @@ fun MakeOrderPage(modifier: Modifier = Modifier, navController: NavHostControlle
     val totalSetelahDiskon = viewModel.totalSetelahDiskon.value
 
     val selectedAddress by addressViewModel.selectedAddress.observeAsState()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchCheckoutData()
+    }
 
     Column(
         modifier = Modifier
@@ -427,9 +436,15 @@ fun MakeOrderPage(modifier: Modifier = Modifier, navController: NavHostControlle
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Button(
-                onClick = {
-                    navController.navigate("orderSuccess")
-                },
+                    onClick = {
+                        if (selectedAddress != null) {
+                            viewModel.placeOrder(context, selectedAddress)
+                            navController.navigate("orderSuccess")
+
+                        } else {
+                            Toast.makeText(context, "Alamat belum dipilih", Toast.LENGTH_SHORT).show()
+                        }
+                    },
                 modifier = Modifier.fillMaxWidth(),
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                     containerColor = Color(
@@ -437,7 +452,7 @@ fun MakeOrderPage(modifier: Modifier = Modifier, navController: NavHostControlle
                     )
                 )
             ) {
-                Text("Bayar", color = Color.White)
+                Text("Buat Order", color = Color.White)
             }
         }
 
@@ -449,6 +464,7 @@ fun MakeOrderPage(modifier: Modifier = Modifier, navController: NavHostControlle
 fun ProductItem(product: ProductModel,
                 viewModel: OrderViewModel = viewModel()
 ) {
+
     val qty = viewModel.user.value.cartItems[product.id] ?: 0
 
     Row (

@@ -132,7 +132,7 @@ fun ProductDetailPage(modifier: Modifier = Modifier,productID:String, navControl
                         .border(2.dp, Color(0xFF9D9EA3), RoundedCornerShape(8.dp)) // Outline abu-abu
                         .padding(12.dp)
                         .clickable {
-
+                            navController.navigate("reviewList/$productID")
                         }
                 ) {
                     Text(
