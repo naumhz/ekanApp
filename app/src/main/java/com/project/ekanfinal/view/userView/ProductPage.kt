@@ -1,4 +1,4 @@
-package com.project.ekanfinal.view
+package com.project.ekanfinal.view.userView
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.project.ekanfinal.BottomNavItem
 import com.project.ekanfinal.BottomNavigationBar
 import com.project.ekanfinal.GlobalNavigation
 import com.project.ekanfinal.R

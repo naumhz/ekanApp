@@ -1,4 +1,4 @@
-package com.project.ekanfinal.view
+package com.project.ekanfinal.view.userView
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border

@@ -127,7 +127,6 @@ class OrderViewModel(
 
     init {
         fetchCheckoutData()
-
     }
 
     fun ongkirPersen(): Float {

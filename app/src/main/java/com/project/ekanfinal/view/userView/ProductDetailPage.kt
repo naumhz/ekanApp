@@ -1,4 +1,4 @@
-package com.project.ekanfinal.view
+package com.project.ekanfinal.view.userView
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -92,7 +92,7 @@ fun ProductDetailPage(modifier: Modifier = Modifier,productID:String, navControl
                         modifier = Modifier.size(24.dp)
                     )
                 }
-                androidx.compose.material3.Text(
+                Text(
                     text = "Detail Produk",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,

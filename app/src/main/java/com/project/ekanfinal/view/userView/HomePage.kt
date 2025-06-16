@@ -1,4 +1,4 @@
-package com.project.ekanfinal.view
+package com.project.ekanfinal.view.userView
 
 import android.widget.Toast
 import androidx.compose.foundation.Image

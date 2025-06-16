@@ -1,4 +1,4 @@
-package com.project.ekanfinal.view
+package com.project.ekanfinal.view.userView
 
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,20 +33,16 @@ import coil.compose.AsyncImage
 import com.project.ekanfinal.R
 import com.project.ekanfinal.StatusStepIndicator
 import com.project.ekanfinal.model.data.ProductModel
-import com.project.ekanfinal.viewmodel.CartViewModel
 import com.project.ekanfinal.viewmodel.OrderViewModel
-import com.project.ekanfinal.viewmodel.UserViewModel
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.project.ekanfinal.model.data.AddressModel
 import com.project.ekanfinal.viewmodel.AddressViewModel
 
 
@@ -88,7 +82,7 @@ fun MakeOrderPage(modifier: Modifier = Modifier, navController: NavHostControlle
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
-                androidx.compose.material3.Icon(
+                Icon(
                     painter = painterResource(id = R.drawable.iconback),
                     contentDescription = "Back",
                     modifier = Modifier.size(24.dp),
@@ -446,7 +440,7 @@ fun MakeOrderPage(modifier: Modifier = Modifier, navController: NavHostControlle
                         }
                     },
                 modifier = Modifier.fillMaxWidth(),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                colors = ButtonDefaults.buttonColors(
                     containerColor = Color(
                         0xFF2EADC9
                     )

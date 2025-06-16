@@ -1,4 +1,4 @@
-package com.project.ekanfinal.view
+package com.project.ekanfinal.view.userView
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -25,9 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,15 +42,12 @@ import coil.compose.AsyncImage
 import com.project.ekanfinal.BottomNavigationBar
 import com.project.ekanfinal.model.data.ProductModel
 import com.project.ekanfinal.viewmodel.CartViewModel
-import com.project.ekanfinal.viewmodel.ProductViewModel
 import com.project.ekanfinal.viewmodel.UserViewModel
 import java.net.URLEncoder
 
 @Composable
 fun CartPage(modifier: Modifier = Modifier, navController: NavHostController,
              viewModel: CartViewModel = viewModel(), userViewModel : UserViewModel = viewModel()
-
-
 ) {
 
     val user by userViewModel.user
@@ -123,14 +118,13 @@ fun CartPage(modifier: Modifier = Modifier, navController: NavHostController,
 
                         Button(
                             onClick = {
-//                                val cartSummary = user?.cartItems?.entries?.joinToString("\n") { (id, qty) ->
-//                                    val product = viewModel.product.value
-//                                    "- ${product?.nama ?: "Produk"} x$qty"
-//                                } ?: "Keranjang kosong."
-//
-//                                val encodedMessage = URLEncoder.encode(cartSummary, "UTF-8")
-//                                navController.navigate("chat?pesan=$encodedMessage")
+                                val cartSummary = user?.cartItems?.entries?.joinToString("\n") { (id, qty) ->
+                                    val product = viewModel.product.value
+                                    "- $product x$qty"
+                                } ?: "Keranjang kosong."
 
+                                val encodedMessage = URLEncoder.encode(cartSummary, "UTF-8")
+                                navController.navigate("chat?pesan=$encodedMessage")
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2EADC9))

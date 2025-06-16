@@ -11,27 +11,27 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.project.ekanfinal.view.CartPage
+import com.project.ekanfinal.view.userView.CartPage
 import com.project.ekanfinal.view.ChatPage
-import com.project.ekanfinal.view.HistoryPage
-import com.project.ekanfinal.view.HomePage
-import com.project.ekanfinal.view.InputAlamatPage
-import com.project.ekanfinal.view.ListAlamatPage
+import com.project.ekanfinal.view.userView.HistoryPage
+import com.project.ekanfinal.view.userView.HomePage
+import com.project.ekanfinal.view.userView.InputAlamatPage
+import com.project.ekanfinal.view.userView.ListAlamatPage
 import com.project.ekanfinal.view.LoginPage
-import com.project.ekanfinal.view.MakeOrderPage
+import com.project.ekanfinal.view.userView.MakeOrderPage
 import com.project.ekanfinal.view.OnBoardingPage
-import com.project.ekanfinal.view.OrderSuccessPage
-import com.project.ekanfinal.view.PayPage
-import com.project.ekanfinal.view.PaymentDetailScreen
-import com.project.ekanfinal.view.PaymentMethod
-import com.project.ekanfinal.view.ProductDetailPage
-import com.project.ekanfinal.view.ProductPage
-import com.project.ekanfinal.view.ProfilePage
+import com.project.ekanfinal.view.userView.OrderSuccessPage
+import com.project.ekanfinal.view.userView.PayPage
+import com.project.ekanfinal.view.userView.PaymentDetailScreen
+import com.project.ekanfinal.view.userView.PaymentMethod
+import com.project.ekanfinal.view.userView.ProductDetailPage
+import com.project.ekanfinal.view.userView.ProductPage
+import com.project.ekanfinal.view.userView.ProfilePage
 import com.project.ekanfinal.view.RegisterPage
-import com.project.ekanfinal.view.ReviewPage
-import com.project.ekanfinal.view.ReviewingPage
-import com.project.ekanfinal.view.SelectAddressPage
-import com.project.ekanfinal.view.VoucherPage
+import com.project.ekanfinal.view.userView.ReviewPage
+import com.project.ekanfinal.view.userView.ReviewingPage
+import com.project.ekanfinal.view.userView.SelectAddressPage
+import com.project.ekanfinal.view.userView.VoucherPage
 import com.project.ekanfinal.viewmodel.AddressViewModel
 import com.project.ekanfinal.viewmodel.AuthViewModel
 import com.project.ekanfinal.viewmodel.BannerViewModel
@@ -55,18 +55,14 @@ fun AppNavigation(
     val navController = rememberNavController()
     GlobalNavigation.navController = navController
 
-
     val isLoggedIn = Firebase.auth.currentUser != null
-    val firstPage =if (isLoggedIn) "home" else "onboarding"
+    val firstPage =if (isLoggedIn) "home" else "Onboarding"
 
     NavHost(navController, startDestination = firstPage) {
 
-        composable("onboarding") {
-            OnBoardingPage(navController = navController)
-        }
-        composable("register") {
-            RegisterPage(navController = navController, viewModel = authViewModel)
-        }
+        //GENERAL PAGE
+        composable("Onboarding") { OnBoardingPage(navController = navController) }
+        composable("Register") { RegisterPage(navController = navController, viewModel = authViewModel) }
         composable("login") {
             LoginPage(navController = navController, viewModel = authViewModel)
         }

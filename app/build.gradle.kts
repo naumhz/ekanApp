@@ -66,4 +66,5 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.2.0")
     implementation("com.tbuonomo:dotsindicator:5.1.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
