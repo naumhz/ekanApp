@@ -21,7 +21,7 @@ class AuthViewModel() : ViewModel() {
     val confirmPasswordError = MutableStateFlow<String?>(null)
 
     private val _userRole = MutableStateFlow<String?>(null)
-    val userRole : StateFlow<String?> get() = _userRole
+    val userRole: StateFlow<String?> get() = _userRole
 
     private val _registerSuccess = MutableStateFlow<Boolean?>(null)
     val registerSuccess : StateFlow<Boolean?> get() = _registerSuccess
@@ -30,10 +30,10 @@ class AuthViewModel() : ViewModel() {
     val loginSuccess : StateFlow<Boolean?> get() = _loginSuccess
 
     private val _generalError = MutableStateFlow<String?>(null)
-    val generalError : StateFlow<String?> get() = _generalError
+    val generalError :StateFlow<String?> get() = _generalError
 
-    private val _isLoading = MutableStateFlow<Boolean?>(null)
-    val isLoading : StateFlow<Boolean?> get() = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading : StateFlow<Boolean> = _isLoading
 
     private val _currentUsername = MutableStateFlow<String?>(null)
     val currentUsername : StateFlow<String?> get() = _currentUsername
@@ -41,8 +41,8 @@ class AuthViewModel() : ViewModel() {
     private val _currentEmail = MutableStateFlow<String?>(null)
     val currentEmail : StateFlow<String?> get() = _currentEmail
 
-    init{
-
+    init {
+        checkIfUserLoggedIn()
     }
 
     //CHECK FIELD TERISI SEMUA, KALAU ADA YANG KOSONG MENAMPILKAN ERROR
@@ -66,25 +66,155 @@ class AuthViewModel() : ViewModel() {
         if (value.isNotBlank()) confirmPasswordError.value = null
     }
 
-    fun login(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
+    fun login() {
+        var isValid = true
+        if(email.value.isBlank()){
+            emailError.value = "Email tidak boleh kosong"
+            isValid = false
+        } else {
+            emailError.value = null
+        }
+
+        if (password.value.isBlank()) {
+            passwordError.value = "Password tidak boleh kosong"
+            isValid = false
+        } else {
+            passwordError.value = null
+        }
+
+        if (!isValid) return
+
+        _isLoading.value = true
+        _generalError.value = null
+
         viewModelScope.launch {
-            val result = repository.login(email, password)
-            if (result.isSuccess) {
-                onResult(true, null)
+            val(success, errorMessage) = repository.login(
+                email.value.trim(),
+                password.value
+            )
+
+            if(success){
+                val role = repository.getUserRole()
+                if(role != null){
+                    _userRole.value = role
+                    _loginSuccess.value = true
+                } else {
+                    _loginSuccess.value = false
+                    _generalError.value = "Gagal mengambil data pengguna"
+                }
             } else {
-                onResult(false, result.exceptionOrNull()?.localizedMessage)
+                _loginSuccess.value = false
+                when{
+                    errorMessage?.contains("Email tidak terdaftar", true) == true -> {
+                        emailError.value = errorMessage
+                    }
+                    errorMessage?.contains("Password salah", true) == true -> {
+                        passwordError.value = errorMessage
+                    }
+                    else -> {
+                        _generalError.value = errorMessage
+                    }
+                }
             }
+
+            _isLoading.value = false
         }
     }
 
-    fun register(username: String, email: String, password: String, onResult: (Boolean, String?) -> Unit) {
+    fun register() {
+        val valid = validateFields()
+        if(!valid) return
+
+        _isLoading.value = true
+
         viewModelScope.launch {
-            val result = repository.register(username, email, password)
-            if (result.isSuccess) {
-                onResult(true, null)
+            val(success, errorMessage) = repository.register(
+                username.value.trim(),
+                email.value.trim(),
+                password.value
+            )
+
+            if(success){
+                _registerSuccess.value = true
             } else {
-                onResult(false, result.exceptionOrNull()?.localizedMessage)
+                _registerSuccess.value = false
+                when {
+                    errorMessage?.contains("Username sudah digunakan", true) == true -> {
+                        usernameError.value = errorMessage
+                    }
+                    errorMessage?.contains("Email sudah digunakan", true) == true -> {
+                        emailError.value = errorMessage
+                    }
+                    else -> {
+                        _generalError.value = errorMessage
+                    }
+                }
             }
+            _isLoading.value = false
+        }
+    }
+
+    private fun validateFields(
+        checkUsername: Boolean = true,
+        checkConfirmPassword: Boolean = true): Boolean{
+        var isValid = true
+        if(checkUsername && username.value.isBlank()){
+            usernameError.value = "Username tidak boleh kosong"
+            isValid = false
+        }
+
+        if(email.value.isBlank()){
+            emailError.value = "Email tidak boleh kosong"
+            isValid = false
+        }
+
+        if(password.value.isBlank()){
+            passwordError.value = "Password tidak boleh kosong"
+            isValid = false
+        }
+
+        if(checkConfirmPassword && confirmPassword.value != password.value){
+            confirmPasswordError.value = "Password tidak sesuai"
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    fun clearErrors(){
+        usernameError.value = null
+        emailError.value = null
+        passwordError.value = null
+        confirmPasswordError.value = null
+        _generalError.value = null
+    }
+
+    fun logout(){
+        viewModelScope.launch {
+            repository.logout()
+            _loginSuccess.value = false
+            _userRole.value = null
+            _currentUsername.value = null
+            _currentEmail.value = null
+        }
+    }
+
+    private fun checkIfUserLoggedIn(){
+        val currentUser = repository._getCurrentUser()
+        if(currentUser != null){
+            viewModelScope.launch {
+                _loginSuccess.value = true
+            }
+        } else {
+            _loginSuccess.value = false
+        }
+    }
+
+    fun fetchCurrentUserData(){
+        viewModelScope.launch {
+            val data = repository.getCurrentUserData()
+            _currentUsername.value = data?.get("username") as? String
+            _currentEmail.value = data?.get("email") as? String
         }
     }
 }

@@ -28,9 +28,11 @@ import com.project.ekanfinal.view.userView.ProductDetailPage
 import com.project.ekanfinal.view.userView.ProductPage
 import com.project.ekanfinal.view.userView.ProfilePage
 import com.project.ekanfinal.view.RegisterPage
+import com.project.ekanfinal.view.SplashScreen
 import com.project.ekanfinal.view.userView.ReviewPage
 import com.project.ekanfinal.view.userView.ReviewingPage
 import com.project.ekanfinal.view.userView.SelectAddressPage
+import com.project.ekanfinal.view.userView.UserHomePage
 import com.project.ekanfinal.view.userView.VoucherPage
 import com.project.ekanfinal.viewmodel.AddressViewModel
 import com.project.ekanfinal.viewmodel.AuthViewModel
@@ -55,26 +57,15 @@ fun AppNavigation(
     val navController = rememberNavController()
     GlobalNavigation.navController = navController
 
-    val isLoggedIn = Firebase.auth.currentUser != null
-    val firstPage =if (isLoggedIn) "home" else "Onboarding"
-
-    NavHost(navController, startDestination = firstPage) {
-
+    NavHost(navController, startDestination = "Splash") {
         //GENERAL PAGE
-        composable("Onboarding") { OnBoardingPage(navController = navController) }
-        composable("Register") { RegisterPage(navController = navController, viewModel = authViewModel) }
-        composable("login") {
-            LoginPage(navController = navController, viewModel = authViewModel)
-        }
-        composable("home") {
-            HomePage(
-                navController = navController,
-                productViewModel = productViewModel,
-                bannerViewModel = bannerViewModel,
-                cartViewModel = cartViewModel,
-                userViewModel = userViewModel
-            )
-        }
+        composable("Splash") { SplashScreen(navController) }
+        composable("Onboarding") { OnBoardingPage(navController) }
+        composable("Register") { RegisterPage(navController) }
+        composable("Login") { LoginPage(navController) }
+
+        //USER PAGE
+        composable("UserHome") { UserHomePage(navController = navController) }
 
         composable("produk") {
             ProductPage(navController = navController, viewModel = productViewModel)

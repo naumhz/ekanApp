@@ -56,7 +56,7 @@ import com.tbuonomo.viewpagerdotsindicator.compose.model.DotGraphic
 import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
 
 @Composable
-fun HomePage(
+fun UserHomePage(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     productViewModel: ProductViewModel,

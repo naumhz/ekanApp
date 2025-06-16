@@ -11,11 +11,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,18 +36,48 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.project.ekanfinal.ui.theme.Poppins
+import com.project.ekanfinal.ui.theme.PrimaryColor
 import com.project.ekanfinal.viewmodel.AuthViewModel
 
 @Composable
-fun LoginPage(modifier: Modifier = Modifier, navController: NavHostController, viewModel: AuthViewModel){
+fun LoginPage(
+    navController: NavHostController,
+    authViewModel: AuthViewModel = viewModel()
+){
+    val email by authViewModel.email.collectAsState()
+    val password by authViewModel.password.collectAsState()
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
+    val emailError by authViewModel.emailError.collectAsState()
+    val passwordError by authViewModel.passwordError.collectAsState()
+    val generalError by authViewModel.generalError.collectAsState()
+
+    val userRole by authViewModel.userRole.collectAsState()
+
+    val isLoading by authViewModel.isLoading.collectAsState()
+    val loginSuccess by authViewModel.loginSuccess.collectAsState()
+
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(loginSuccess) {
+        if(loginSuccess == true){
+            when(userRole){
+                "admin" -> navController.navigate("AdminHome"){
+                    popUpTo("Login") { inclusive = true }
+                }
+                "user" -> navController.navigate("UserHome"){
+                    popUpTo("Login") { inclusive = true }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -50,57 +88,94 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavHostController, v
     ) {
         Text(
             text = "Login",
-            color = Color(0xFF2EADC9),
+            color = PrimaryColor,
+            fontFamily = Poppins,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
+        Spacer(modifier = Modifier.height(32.dp))
         val textFieldShape = RoundedCornerShape(16.dp)
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = textFieldShape
+            onValueChange = { authViewModel.onEmailChanged(it)},
+            label = { Text("Email") },
+            shape = textFieldShape,
+            isError = emailError != null,
+            enabled = !isLoading,
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        if(emailError != null){
+            Text(
+                emailError!!,
+                color = Color.Red,
+                fontFamily = Poppins,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth())
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { authViewModel.onPasswordChanged(it)},
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            shape = textFieldShape,
+            isError = passwordError != null,
+            enabled = !isLoading,
             modifier = Modifier.fillMaxWidth(),
-            shape = textFieldShape
+            visualTransformation = if(passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = if(passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        contentDescription = null
+                    )
+                }
+            }
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        if(passwordError != null){
+            Text(
+                passwordError!!,
+                color = Color.Red,
+                fontFamily = Poppins,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth())
+        }
+
+        Spacer(modifier = Modifier.height(64.dp))
 
         Button(
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2EADC9)),
             onClick = {
-                isLoading = true
-                viewModel.login( email, password){success, error ->
-                    if (success){
-                        isLoading = false
-                        navController.navigate("home"){
-                            popUpTo("onboarding"){inclusive = true}
-                        }
-                    }else{
-                        isLoading = false
-                    }
-                }
-                      },
+                authViewModel.clearErrors()
+                authViewModel.login() },
+            shape = RoundedCornerShape(100.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
             modifier = Modifier
                 .width(200.dp)
-                .height(48.dp)
+                .height(48.dp),
+            enabled = !isLoading
         ) {
-            Text(text = "Login", fontSize = 16.sp)
+            if(isLoading){
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(24.dp)
+                )
+            } else {
+                Text(
+                    text = "Login",
+                    fontFamily = Poppins,
+                    fontSize = 16.sp)
+            }
         }
 
 
@@ -109,14 +184,23 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavHostController, v
         Text(
             text = buildAnnotatedString {
                 append("Belum memiliki akun?")
-                pushStyle(SpanStyle(color = Color.Red))
+                pushStyle(SpanStyle(color = PrimaryColor))
                 append(" Register")
                 pop()
             },
             modifier = Modifier.clickable {
-                navController.navigate("register")
+                navController.navigate("Register")
             }
         )
-    }
 
+        if (generalError != null) {
+            Spacer(modifier = Modifier.height(64.dp))
+            Text(
+                text = generalError!!,
+                color = Color.Red,
+                fontFamily = Poppins,
+                fontSize = 14.sp
+            )
+        }
+    }
 }

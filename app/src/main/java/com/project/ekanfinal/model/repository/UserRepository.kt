@@ -2,7 +2,11 @@ package com.project.ekanfinal.model.repository
 
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,25 +22,122 @@ class UserRepository {
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
-    suspend fun login(email: String, password: String): Result<FirebaseUser?> {
-        return try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
-            Result.success(result.user)
-        } catch (e: Exception) {
-            Result.failure(e)
+    suspend fun isUsernameTaken(username : String) : Boolean{
+        return try{
+            val result = firestore.collection("users")
+                .whereEqualTo("username", username)
+                .get()
+                .await()
+            !result.isEmpty
+        } catch (e: Exception){
+            false
         }
     }
 
-    suspend fun register(username: String, email: String, password: String): Result<FirebaseUser?> {
-        return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val uid = result.user?.uid ?: return Result.failure(Exception("UID null"))
-            val user = UserModel(username, email, uid)
-            firestore.collection("users").document(uid).set(user).await()
-            Result.success(result.user)
-        } catch (e: Exception) {
-            Result.failure(e)
+    suspend fun isEmailTaken(email : String) : Boolean{
+        return try{
+            val result = firestore.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .await()
+            !result.isEmpty
+        } catch (e: Exception){
+            false
         }
+    }
+
+    suspend fun login(email: String, password: String): Pair<Boolean, String?> {
+        return try {
+            auth.signInWithEmailAndPassword(email, password).await()
+            Pair(true, null)
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Pair(false, "Email tidak terdaftar")
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Pair(false, "Email atau password salah")
+        } catch (e: Exception) {
+            Pair(false, e.message)
+        }
+    }
+
+    suspend fun register(
+        username : String,
+        email : String,
+        password : String
+    ) : Pair<Boolean, String?>{
+        try{
+            if(isUsernameTaken(username)){
+                return Pair(false, "Username sudah digunakan")
+            }
+
+            if(isEmailTaken(email)){
+                return Pair(false, "Email sudah digunakan")
+            }
+
+            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+            val user : FirebaseUser? = authResult.user
+
+            user?.uid?.let{ uid ->
+                val createdAt = Timestamp.now()
+                val user = UserModel(uid, username, email, role = "user", createdAt)
+                firestore.collection("users").document(uid).set(user).await()
+                return Pair(true, null)
+            } ?: return Pair(false, "Gagal mendapatkan UID")
+        } catch (e: FirebaseAuthUserCollisionException){
+            return Pair(false, "Email sudah digunakan")
+        } catch (e: Exception){
+            return Pair(false, e.message)
+        }
+    }
+
+    suspend fun getUserRole(): String? {
+        return try {
+            val uid = auth.currentUser?.uid ?: return null
+            val doc = firestore.collection("users").document(uid).get().await()
+            doc.getString("role")
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun getCurrentUser(): UserModel?{
+        val uid = auth.currentUser?.uid ?: return null
+        val snapshot = firestore.collection("users").document(uid).get().await()
+        return snapshot.toObject(UserModel::class.java)
+    }
+
+    suspend fun getUserById(userId: String): UserModel? {
+        val snapshot = firestore.collection("users")
+            .document(userId)
+            .get()
+            .await()
+
+        return if (snapshot.exists()) {
+            snapshot.toObject(UserModel::class.java)
+        } else {
+            null
+        }
+    }
+
+    fun generateUserId(): String?{
+        return auth.currentUser?.uid
+    }
+
+    fun _getCurrentUser(){
+        auth.currentUser
+    }
+
+    suspend fun getCurrentUserData(): Map<String, Any?>? {
+        return try{
+            val uid = auth.currentUser?.uid ?: return null
+            val doc = firestore.collection("users").document(uid).get().await()
+            if(doc.exists()) doc.data else null
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun logout(){
+        auth.signOut()
     }
 
     fun getUserListener(onUserChange: (UserModel?) -> Unit): ListenerRegistration? {
@@ -54,12 +155,6 @@ class UserRepository {
                 onUserChange(user)
             }
     }
-    suspend fun getCurrentUser(): UserModel? {
-        val uid = auth.currentUser?.uid ?: return null
-        val snapshot = firestore.collection("users").document(uid).get().await()
-        return snapshot.toObject(UserModel::class.java)
-    }
-
 }
 
 
