@@ -11,10 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.project.ekanfinal.view.userView.CartPage
-import com.project.ekanfinal.view.ChatPage
 import com.project.ekanfinal.view.userView.HistoryPage
-import com.project.ekanfinal.view.userView.HomePage
 import com.project.ekanfinal.view.userView.InputAlamatPage
 import com.project.ekanfinal.view.userView.ListAlamatPage
 import com.project.ekanfinal.view.LoginPage
@@ -25,34 +22,29 @@ import com.project.ekanfinal.view.userView.PayPage
 import com.project.ekanfinal.view.userView.PaymentDetailScreen
 import com.project.ekanfinal.view.userView.PaymentMethod
 import com.project.ekanfinal.view.userView.ProductDetailPage
-import com.project.ekanfinal.view.userView.ProductPage
 import com.project.ekanfinal.view.userView.ProfilePage
 import com.project.ekanfinal.view.RegisterPage
 import com.project.ekanfinal.view.SplashScreen
 import com.project.ekanfinal.view.userView.ReviewPage
 import com.project.ekanfinal.view.userView.ReviewingPage
 import com.project.ekanfinal.view.userView.SelectAddressPage
+import com.project.ekanfinal.view.userView.UserCartPage
 import com.project.ekanfinal.view.userView.UserHomePage
+import com.project.ekanfinal.view.userView.UserProductPage
 import com.project.ekanfinal.view.userView.VoucherPage
 import com.project.ekanfinal.viewmodel.AddressViewModel
-import com.project.ekanfinal.viewmodel.AuthViewModel
-import com.project.ekanfinal.viewmodel.BannerViewModel
 import com.project.ekanfinal.viewmodel.CartViewModel
 import com.project.ekanfinal.viewmodel.OrderViewModel
 import com.project.ekanfinal.viewmodel.ProductViewModel
-import com.project.ekanfinal.viewmodel.ReviewViewModel
 import com.project.ekanfinal.viewmodel.UserViewModel
 
 @Composable
 fun AppNavigation(
-    authViewModel: AuthViewModel,
     productViewModel: ProductViewModel,
-    bannerViewModel: BannerViewModel,
     cartViewModel: CartViewModel,
     userViewModel: UserViewModel,
     orderViewModel: OrderViewModel,
     addressViewModel: AddressViewModel,
-    reviewViewModel: ReviewViewModel
 ) {
     val navController = rememberNavController()
     GlobalNavigation.navController = navController
@@ -60,18 +52,15 @@ fun AppNavigation(
     NavHost(navController, startDestination = "Splash") {
         //GENERAL PAGE
         composable("Splash") { SplashScreen(navController) }
-        composable("Onboarding") { OnBoardingPage(navController) }
+        composable("OnBoarding") { OnBoardingPage(navController) }
         composable("Register") { RegisterPage(navController) }
         composable("Login") { LoginPage(navController) }
 
         //USER PAGE
         composable("UserHome") { UserHomePage(navController = navController) }
-
-        composable("produk") {
-            ProductPage(navController = navController, viewModel = productViewModel)
-        }
+        composable("UserProducts") { UserProductPage(navController) }
         composable("keranjang") {
-            CartPage(navController = navController)
+            UserCartPage(navController = navController)
         }
         composable("pesanan") {
             HistoryPage(navController = navController, uid = Firebase.auth.currentUser?.uid ?: "")
@@ -98,10 +87,10 @@ fun AppNavigation(
             MakeOrderPage(navController = navController, viewModel = orderViewModel, addressViewModel = addressViewModel)
         }
 
-        composable("chat?pesan={pesan}") { backStackEntry ->
-            val pesan = backStackEntry.arguments?.getString("pesan") ?: ""
-            ChatPage(pesan = pesan)
-        }
+//        composable("chat?pesan={pesan}") { backStackEntry ->
+//            val pesan = backStackEntry.arguments?.getString("pesan") ?: ""
+//            ChatPage(pesan = pesan)
+//        }
 
         composable("inputAlamat") {
             InputAlamatPage(navController = navController, viewModel = addressViewModel, onSuccess = {

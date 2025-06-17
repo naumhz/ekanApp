@@ -39,14 +39,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.project.ekanfinal.BottomNavigationBar
 import com.project.ekanfinal.model.data.ProductModel
 import com.project.ekanfinal.viewmodel.CartViewModel
 import com.project.ekanfinal.viewmodel.UserViewModel
 import java.net.URLEncoder
 
 @Composable
-fun CartPage(modifier: Modifier = Modifier, navController: NavHostController,
+fun UserCartPage(modifier: Modifier = Modifier, navController: NavHostController,
              viewModel: CartViewModel = viewModel(), userViewModel : UserViewModel = viewModel()
 ) {
 
@@ -59,9 +58,8 @@ fun CartPage(modifier: Modifier = Modifier, navController: NavHostController,
         }
     }
 
-
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
+        bottomBar = { UserBottomBar(navController) }
     ) { paddingValues ->
         Column(
             modifier = Modifier

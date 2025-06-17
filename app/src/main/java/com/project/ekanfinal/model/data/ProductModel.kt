@@ -1,10 +1,12 @@
 package com.project.ekanfinal.model.data
 
+//MODIF DONE
 data class ProductModel(
     val id: String = "",
     val kategori: String = "",
     val nama: String = "",
-    val harga: String = "",
+    val harga: Int = 0,
+    val diskon: Int = 0,
     val rating: Float = 0f,
     val reviewCount: Int = 0,
     val deskripsi: String = "",
@@ -13,4 +15,7 @@ data class ProductModel(
     val kondisi: String = "",
     val potongan: String = "",
     val imageUrl: String = ""
-)
+){
+    val hargaDiskon: Int
+        get() = if (diskon in 1..100) harga - (harga * diskon / 100) else harga
+}

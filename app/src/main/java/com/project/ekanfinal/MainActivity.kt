@@ -41,14 +41,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             EkanFinalTheme {
                 AppNavigation(
-                    authViewModel = authViewModel,
                     productViewModel = productViewModel,
-                    bannerViewModel = bannerViewModel,
                     cartViewModel = cartViewModel,
                     userViewModel = userViewModel,
                     orderViewModel = orderViewModel,
-                    addressViewModel = addressViewModel,
-                    reviewViewModel = reviewViewModel
+                    addressViewModel = addressViewModel
                 )
             }
         }

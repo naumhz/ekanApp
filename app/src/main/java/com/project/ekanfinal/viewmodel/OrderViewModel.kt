@@ -145,7 +145,7 @@ class OrderViewModel(
     private fun calculate() {
         total.value = productList.sumOf {
             val qty = user.value.cartItems[it.id] ?: 0
-            ((it.harga.toFloatOrNull() ?: 0f) * qty).toDouble()
+            ((it.harga.toFloat() ?: 0f) * qty).toDouble()
         }.toFloat()
 
         ongkir.value = total.value * ongkirPersen()

@@ -41,6 +41,7 @@ import com.project.ekanfinal.ui.theme.PrimaryColor
 import com.project.ekanfinal.util.OnboardingPreference
 import kotlinx.coroutines.launch
 
+//MODIF DONE
 data class OnboardingPage(
     val title: String,
     val imageRes: Int

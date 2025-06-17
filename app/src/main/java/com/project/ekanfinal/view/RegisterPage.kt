@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -45,6 +44,7 @@ import com.project.ekanfinal.ui.theme.Poppins
 import com.project.ekanfinal.ui.theme.PrimaryColor
 import com.project.ekanfinal.viewmodel.AuthViewModel
 
+//MODIF DONE
 @Composable
 fun RegisterPage(
     navController: NavHostController,

@@ -1,9 +1,10 @@
-package com.project.ekanfinal
+package com.project.ekanfinal.view.userView
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,17 +14,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.project.ekanfinal.R
+import com.project.ekanfinal.ui.theme.PrimaryColor
 
+//MODIF DONE
 sealed class BottomNavItem(val route: String, val icon: Int, val label: String) {
-    object HomePage : BottomNavItem("home", R.drawable.navhome, "Home")
-    object ProductPage : BottomNavItem("produk", R.drawable.navproduk, "Produk")
-    object CartPage : BottomNavItem("keranjang", R.drawable.navkeranjang, "Cart")
-    object HistoryPage : BottomNavItem("pesanan", R.drawable.navriwayat, "Pesanan")
-    object ProfilePage : BottomNavItem("profil", R.drawable.navprofil, "Profil")
+    object HomePage : BottomNavItem("UserHome", R.drawable.navhome, "Home")
+    object ProductPage : BottomNavItem("UserProducts", R.drawable.navproduk, "Produk")
+    object CartPage : BottomNavItem("UserCart", R.drawable.navkeranjang, "Keranjang")
+    object HistoryPage : BottomNavItem("UserHistory", R.drawable.navriwayat, "Pesanan")
+    object ProfilePage : BottomNavItem("UserProfile", R.drawable.navprofil, "Profil")
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun UserBottomBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.HomePage,
         BottomNavItem.ProductPage,
@@ -46,14 +50,14 @@ fun BottomNavigationBar(navController: NavHostController) {
                         painter = painterResource(id = item.icon),
                         contentDescription = item.label,
                         modifier = Modifier.size(24.dp),
-                        tint = if (isSelected) Color(0xFF2EADC9) else Color.Gray
+                        tint = if (isSelected) PrimaryColor else Color.Gray
                     )
                 },
                 label = {
                     Text(
                         text = item.label,
                         fontSize = 12.sp,
-                        color = if (isSelected) Color(0xFF2EADC9) else Color.Gray
+                        color = if (isSelected) PrimaryColor else Color.Gray
                     )
                 },
                 selected = isSelected,
@@ -65,7 +69,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                             restoreState = true
                         }
                     }
-                }
+                },
+                colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent)
             )
         }
     }

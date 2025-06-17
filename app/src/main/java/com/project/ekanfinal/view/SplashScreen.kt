@@ -22,6 +22,7 @@ import com.project.ekanfinal.util.OnboardingPreference
 import com.project.ekanfinal.viewmodel.AuthViewModel
 import kotlinx.coroutines.delay
 
+//MODIF DONE
 @Composable
 fun SplashScreen(navController: NavController) {
     val authViewModel: AuthViewModel = viewModel()

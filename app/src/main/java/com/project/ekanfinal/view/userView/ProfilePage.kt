@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
-import com.project.ekanfinal.BottomNavigationBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -63,7 +62,7 @@ fun ProfilePage(navController: NavHostController) {
     }
 
 
-    Scaffold(bottomBar = { BottomNavigationBar(navController) }) { paddingValues ->
+    Scaffold(bottomBar = { UserBottomBar(navController) }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

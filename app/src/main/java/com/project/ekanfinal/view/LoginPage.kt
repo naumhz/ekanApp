@@ -47,6 +47,7 @@ import com.project.ekanfinal.ui.theme.Poppins
 import com.project.ekanfinal.ui.theme.PrimaryColor
 import com.project.ekanfinal.viewmodel.AuthViewModel
 
+//MODIF DONE
 @Composable
 fun LoginPage(
     navController: NavHostController,

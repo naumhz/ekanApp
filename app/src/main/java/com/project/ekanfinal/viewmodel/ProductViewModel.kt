@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+//MODIF DONE
 class ProductViewModel(
-    private val repository : ProductRepository = ProductRepository(),
-    private val detailRepository : DetailRepository = DetailRepository()
+    private val repository : ProductRepository = ProductRepository()
 ) : ViewModel() {
 
     private val _productList = MutableStateFlow<List<ProductModel>>(emptyList())
@@ -32,9 +32,7 @@ class ProductViewModel(
 
     fun getProductById(productId: String) {
         viewModelScope.launch {
-            _selectedProduct.value = detailRepository.getProductById(productId)
+            _selectedProduct.value = repository.getProductById(productId)
         }
     }
-
-
 }

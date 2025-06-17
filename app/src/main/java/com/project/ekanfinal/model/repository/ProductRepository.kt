@@ -4,11 +4,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.project.ekanfinal.model.data.ProductModel
 import kotlinx.coroutines.tasks.await
 
+//MODIF DONE
 class ProductRepository {
     private val firestore = FirebaseFirestore.getInstance()
-
-    val docRef = firestore.collection("data").document("stock")
-        .collection("products")
+    val docRef = firestore.collection("data").document("stock").collection("products")
 
     suspend fun getProducts(): List<ProductModel> {
         return try {
@@ -17,6 +16,11 @@ class ProductRepository {
         } catch (e: Exception) {
             emptyList()
         }
+    }
+
+    suspend fun getProductById(productId: String): ProductModel? {
+        val detail = docRef.document(productId).get().await()
+        return detail.toObject(ProductModel::class.java)
     }
 
     suspend fun getProductsByIds(ids: List<String>): List<ProductModel> {
